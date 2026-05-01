@@ -1,0 +1,11 @@
+test.rest
+.env
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+generate_entities.py
+.venv/
