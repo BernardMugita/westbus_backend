@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.auth.auth_model import User
 from app.routers.users.user_schemas import UserResponse, UserUpdate
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 class UserController:
     def __init__(self):

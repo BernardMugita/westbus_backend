@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.expense.expenses_model import Expense
 from app.routers.expense.expense_schemas import ExpenseCreate, ExpenseUpdate, ExpenseResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class ExpenseController:
@@ -24,11 +24,17 @@ class ExpenseController:
             ExpenseResponse
         """
         try:
-            record = Expense(**data.model_dump())
+            record = Expense(
+                trip_id=data.trip_id,
+                type=data.type,
+                amount=data.amount,
+                receipt_image=data.receipt_image,
+                incident_type=data.incident_type,
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return ExpenseResponse(status="success", message="Expense created successfully", payload=record.__dict__)
+            return ExpenseResponse(status="success", message="Expense created successfully", payload=record.to_dict())
         except HTTPException as e:
             return ExpenseResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +60,7 @@ class ExpenseController:
             return ExpenseResponse(
                 status="success",
                 message="Expenses retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +84,7 @@ class ExpenseController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Expense not found")
-            return ExpenseResponse(status="success", message="Expense retrieved successfully", payload=record.__dict__)
+            return ExpenseResponse(status="success", message="Expense retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return ExpenseResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +114,7 @@ class ExpenseController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return ExpenseResponse(status="success", message="Expense updated successfully", payload=record.__dict__)
+            return ExpenseResponse(status="success", message="Expense updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return ExpenseResponse(status="error", message=e.detail)
         except Exception as e:

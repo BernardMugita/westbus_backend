@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.insurance_policy.policy_model import InsurancePolicy
 from app.routers.insurance_policy.insurance_policy_schemas import InsurancePolicyCreate, InsurancePolicyUpdate, InsurancePolicyResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class InsurancePolicyController:
@@ -24,11 +24,19 @@ class InsurancePolicyController:
             InsurancePolicyResponse
         """
         try:
-            record = InsurancePolicy(**data.model_dump())
+            record = InsurancePolicy(
+                vehicle_id=data.vehicle_id,
+                provider=data.provider,
+                policy_type=data.policy_type,
+                start_date=data.start_date,
+                end_date=data.end_date,
+                premium_amount=data.premium_amount,
+                status=data.status
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return InsurancePolicyResponse(status="success", message="InsurancePolicy created successfully", payload=record.__dict__)
+            return InsurancePolicyResponse(status="success", message="InsurancePolicy created successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsurancePolicyResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +62,7 @@ class InsurancePolicyController:
             return InsurancePolicyResponse(
                 status="success",
                 message="InsurancePolicys retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +86,7 @@ class InsurancePolicyController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="InsurancePolicy not found")
-            return InsurancePolicyResponse(status="success", message="InsurancePolicy retrieved successfully", payload=record.__dict__)
+            return InsurancePolicyResponse(status="success", message="InsurancePolicy retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsurancePolicyResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +116,7 @@ class InsurancePolicyController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return InsurancePolicyResponse(status="success", message="InsurancePolicy updated successfully", payload=record.__dict__)
+            return InsurancePolicyResponse(status="success", message="InsurancePolicy updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsurancePolicyResponse(status="error", message=e.detail)
         except Exception as e:

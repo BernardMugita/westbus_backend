@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.driver_assignment.assignment_model import DriverAssignment
 from app.routers.driver_assignment.driver_assignment_schemas import DriverAssignmentCreate, DriverAssignmentUpdate, DriverAssignmentResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class DriverAssignmentController:

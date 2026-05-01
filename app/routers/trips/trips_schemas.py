@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
@@ -6,8 +8,8 @@ class TripCreate(BaseModel):
     vehicle_id: str
     driver_id: str
     route_id: str
-    start_time: str
-    end_time: Optional[str] = None
+    start_time: datetime
+    end_time: Optional[datetime] = None
     expected_duration_min: Optional[int] = None
     distance_km: Optional[float] = None
     status: Optional[str] = None

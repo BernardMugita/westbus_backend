@@ -9,26 +9,26 @@ router = APIRouter(prefix="/loans", tags=["loans"])
 controller = LoanController()
 
 
-@router.post("/", response_model=LoanResponse)
+@router.post("/add_loan", response_model=LoanResponse)
 async def create_loans(data: LoanCreate, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.create_loans(db=db, data=data, authorization=authorization)
 
 
-@router.get("/", response_model=LoanResponse)
+@router.post("/get_all_loans", response_model=LoanResponse)
 async def get_all_loans(db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.get_all_loans(db=db, authorization=authorization)
 
 
-@router.get("/{loan_id}", response_model=LoanResponse)
+@router.post("/get_loan/{loan_id}", response_model=LoanResponse)
 async def get_loans(loan_id: str, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.get_loans(db=db, loan_id=loan_id, authorization=authorization)
 
 
-@router.patch("/{loan_id}", response_model=LoanResponse)
+@router.post("/update_loan/{loan_id}", response_model=LoanResponse)
 async def update_loans(loan_id: str, data: LoanUpdate, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.update_loans(db=db, loan_id=loan_id, data=data, authorization=authorization)
 
 
-@router.delete("/{loan_id}", response_model=LoanResponse)
+@router.post("/delete_loan/{loan_id}", response_model=LoanResponse)
 async def delete_loans(loan_id: str, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.delete_loans(db=db, loan_id=loan_id, authorization=authorization)

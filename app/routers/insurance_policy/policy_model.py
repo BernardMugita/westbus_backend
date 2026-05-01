@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy import String, Integer, Boolean, Enum as SqlEnum, ForeignKey, DateTime, Numeric, Text
 from datetime import datetime, timezone, timedelta
-from app.routers.core.models import Base
+from app.config.core.models import Base
 from decimal import Decimal
 from enum import Enum
 import uuid
@@ -37,3 +37,17 @@ class InsurancePolicy(Base):
     status: Mapped[InsuranceStatus] = mapped_column(SqlEnum(InsuranceStatus), default=InsuranceStatus.ACTIVE)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_eat)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_eat, onupdate=now_eat)
+    
+    def to_dict(self):
+        return {
+            "insurance_id": self.insurance_id,
+            "vehicle_id": self.vehicle_id,
+            "provider": self.provider,
+            "policy_type": self.policy_type.value,
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
+            "premium_amount": float(self.premium_amount),
+            "status": self.status.value,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+        }

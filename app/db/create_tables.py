@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from app.db.database import engine
-from app.routers.core.models import Base
+from app.config.core.models import Base
 from app.routers.auth.auth_model import User
 from app.routers.vehicle.vehicle_model import Vehicle
 from app.routers.bookings.bookings_model import Booking

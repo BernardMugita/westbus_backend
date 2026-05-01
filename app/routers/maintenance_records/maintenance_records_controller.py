@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.maintenance_records.maintenance_model import MaintenanceRecord
 from app.routers.maintenance_records.maintenance_records_schemas import MaintenanceRecordCreate, MaintenanceRecordUpdate, MaintenanceRecordResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class MaintenanceRecordController:
@@ -24,11 +24,20 @@ class MaintenanceRecordController:
             MaintenanceRecordResponse
         """
         try:
-            record = MaintenanceRecord(**data.model_dump())
+            record = MaintenanceRecord(
+                vehicle_id=data.vehicle_id,
+                driver_id=data.driver_id,
+                maintenance_date=data.maintenance_date,
+                type=data.type,
+                cost=data.cost,
+                odometer_km=data.odometer_km,
+                garage_name=data.garage_name,
+                next_due_km=data.next_due_km
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord created successfully", payload=record.__dict__)
+            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord created successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceRecordResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +63,7 @@ class MaintenanceRecordController:
             return MaintenanceRecordResponse(
                 status="success",
                 message="MaintenanceRecords retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +87,7 @@ class MaintenanceRecordController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="MaintenanceRecord not found")
-            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord retrieved successfully", payload=record.__dict__)
+            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceRecordResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +117,7 @@ class MaintenanceRecordController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord updated successfully", payload=record.__dict__)
+            return MaintenanceRecordResponse(status="success", message="MaintenanceRecord updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceRecordResponse(status="error", message=e.detail)
         except Exception as e:

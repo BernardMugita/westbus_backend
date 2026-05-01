@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.payments.payments_model import Payment
 from app.routers.payments.payments_schemas import PaymentCreate, PaymentUpdate, PaymentResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class PaymentController:

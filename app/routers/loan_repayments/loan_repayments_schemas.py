@@ -1,20 +1,22 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 
 class LoanRepaymentCreate(BaseModel):
     loan_id: str
-    payment_date: str
+    payment_date: datetime
     amount_paid: float
     principal_portion: float
     interest_portion: float
-    outstanding_balance: float
+    # outstanding_balance: Optional[float]
     receipt_ref: Optional[str] = None
 
 
 class LoanRepaymentUpdate(BaseModel):
     loan_id: Optional[str] = None
-    payment_date: Optional[str] = None
+    payment_date: Optional[datetime] = None
     amount_paid: Optional[float] = None
     principal_portion: Optional[float] = None
     interest_portion: Optional[float] = None

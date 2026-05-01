@@ -9,26 +9,26 @@ router = APIRouter(prefix="/trips", tags=["trips"])
 controller = TripController()
 
 
-@router.post("/", response_model=TripResponse)
+@router.post("/create_trip", response_model=TripResponse)
 async def create_trips(data: TripCreate, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.create_trips(db=db, data=data, authorization=authorization)
 
 
-@router.get("/", response_model=TripResponse)
+@router.post("/get_all_trips", response_model=TripResponse)
 async def get_all_trips(db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.get_all_trips(db=db, authorization=authorization)
 
 
-@router.get("/{trip_id}", response_model=TripResponse)
+@router.post("/get_trip/{trip_id}", response_model=TripResponse)
 async def get_trips(trip_id: str, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.get_trips(db=db, trip_id=trip_id, authorization=authorization)
 
 
-@router.patch("/{trip_id}", response_model=TripResponse)
+@router.post("/update_trip/{trip_id}", response_model=TripResponse)
 async def update_trips(trip_id: str, data: TripUpdate, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.update_trips(db=db, trip_id=trip_id, data=data, authorization=authorization)
 
 
-@router.delete("/{trip_id}", response_model=TripResponse)
+@router.post("/delete_trip/{trip_id}", response_model=TripResponse)
 async def delete_trips(trip_id: str, db: AsyncSession = Depends(get_db), authorization: str = Header(...)):
     return await controller.delete_trips(db=db, trip_id=trip_id, authorization=authorization)

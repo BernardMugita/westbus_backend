@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.vehicle.vehicle_model import Vehicle
 from app.routers.vehicle.vehicle_schemas import VehicleCreate, VehicleUpdate, VehicleResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class VehicleController:

@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.revenue_ledger.ledger_model import RevenueLedger
 from app.routers.revenue_ledger.revenue_ledger_schemas import RevenueLedgerCreate, RevenueLedgerUpdate, RevenueLedgerResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class RevenueLedgerController:
@@ -24,11 +24,20 @@ class RevenueLedgerController:
             RevenueLedgerResponse
         """
         try:
-            record = RevenueLedger(**data.model_dump())
+            record = RevenueLedger(
+                trip_id=data.trip_id,
+                revenue_source=data.revenue_source,
+                amount=data.amount,
+                revenue_type=data.revenue_type,
+                recorded_at=data.recorded_at,
+                recorded_by=data.recorded_by,
+                notes=data.notes
+            )
+            
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return RevenueLedgerResponse(status="success", message="RevenueLedger created successfully", payload=record.__dict__)
+            return RevenueLedgerResponse(status="success", message="RevenueLedger created successfully", payload=record.to_dict())
         except HTTPException as e:
             return RevenueLedgerResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +63,7 @@ class RevenueLedgerController:
             return RevenueLedgerResponse(
                 status="success",
                 message="RevenueLedgers retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +87,7 @@ class RevenueLedgerController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="RevenueLedger not found")
-            return RevenueLedgerResponse(status="success", message="RevenueLedger retrieved successfully", payload=record.__dict__)
+            return RevenueLedgerResponse(status="success", message="RevenueLedger retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return RevenueLedgerResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +117,7 @@ class RevenueLedgerController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return RevenueLedgerResponse(status="success", message="RevenueLedger updated successfully", payload=record.__dict__)
+            return RevenueLedgerResponse(status="success", message="RevenueLedger updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return RevenueLedgerResponse(status="error", message=e.detail)
         except Exception as e:

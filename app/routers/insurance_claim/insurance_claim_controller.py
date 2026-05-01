@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.insurance_claim.claims_model import InsuranceClaim
 from app.routers.insurance_claim.insurance_claim_schemas import InsuranceClaimCreate, InsuranceClaimUpdate, InsuranceClaimResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class InsuranceClaimController:
@@ -24,11 +24,19 @@ class InsuranceClaimController:
             InsuranceClaimResponse
         """
         try:
-            record = InsuranceClaim(**data.model_dump())
+            record = InsuranceClaim(
+                insurance_id=data.insurance_id,
+                incident_date=data.incident_date,
+                claim_date=data.claim_date,
+                amount_claimed=data.amount_claimed,
+                status=data.status,
+                repair_estimate=data.repair_estimate
+            )
+            
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return InsuranceClaimResponse(status="success", message="InsuranceClaim created successfully", payload=record.__dict__)
+            return InsuranceClaimResponse(status="success", message="InsuranceClaim created successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsuranceClaimResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +62,7 @@ class InsuranceClaimController:
             return InsuranceClaimResponse(
                 status="success",
                 message="InsuranceClaims retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +86,7 @@ class InsuranceClaimController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="InsuranceClaim not found")
-            return InsuranceClaimResponse(status="success", message="InsuranceClaim retrieved successfully", payload=record.__dict__)
+            return InsuranceClaimResponse(status="success", message="InsuranceClaim retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsuranceClaimResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +116,7 @@ class InsuranceClaimController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return InsuranceClaimResponse(status="success", message="InsuranceClaim updated successfully", payload=record.__dict__)
+            return InsuranceClaimResponse(status="success", message="InsuranceClaim updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return InsuranceClaimResponse(status="error", message=e.detail)
         except Exception as e:

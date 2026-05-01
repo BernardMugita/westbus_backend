@@ -13,8 +13,8 @@ from app.routers.driver_assignment.driver_assignment_services import router as d
 from app.routers.driver_score_history.driver_score_history_services import router as driver_score_history_router
 
 # # ─── Routes & Trips ───────────────────────────────────────────────────────────
-# from app.routers.routes.routes_services import router as routes_router
-# from app.routers.trips.trips_services import router as trips_router
+from app.routers.routes.routes_services import router as routes_router
+from app.routers.trips.trips_services import router as trips_router
 
 # # ─── Bookings & Seats ─────────────────────────────────────────────────────────
 # from app.routers.bookings.bookings_services import router as bookings_router
@@ -46,6 +46,8 @@ app.include_router(vehicle_router)
 app.include_router(driver_router)
 app.include_router(driver_assignment_router)
 app.include_router(driver_score_history_router)
+app.include_router(routes_router)
+app.include_router(trips_router)
 app.include_router(revenue_ledger_router)
 app.include_router(expense_router)
 app.include_router(loans_router)

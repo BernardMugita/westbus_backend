@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Integer, Boolean, Enum as SqlEnum, ForeignKey, DateTime, Numeric, Text
 from datetime import datetime, timezone, timedelta
-from app.routers.core.models import Base
+from app.config.core.models import Base
 from decimal import Decimal
 from enum import Enum
 import uuid

@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
@@ -8,7 +9,7 @@ class MaintenanceScheduleCreate(BaseModel):
     interval_km: int
     interval_days: int
     last_done_km: Optional[int] = None
-    last_done_date: Optional[str] = None
+    last_done_date: Optional[datetime] = None
     status: Optional[str] = None
 
 
@@ -18,7 +19,7 @@ class MaintenanceScheduleUpdate(BaseModel):
     interval_km: Optional[int] = None
     interval_days: Optional[int] = None
     last_done_km: Optional[int] = None
-    last_done_date: Optional[str] = None
+    last_done_date: Optional[datetime] = None
     status: Optional[str] = None
 
 

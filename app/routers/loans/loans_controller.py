@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.loans.loans_model import Loan
 from app.routers.loans.loans_schemas import LoanCreate, LoanUpdate, LoanResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class LoanController:
@@ -24,11 +24,21 @@ class LoanController:
             LoanResponse
         """
         try:
-            record = Loan(**data.model_dump())
+            record = Loan(
+                vehicle_id=data.vehicle_id,
+                lender=data.lender,
+                principal_amount=data.principal_amount,
+                interest_rate=data.interest_rate,
+                total_payable=data.total_payable,
+                start_date=data.start_date,
+                end_date=data.end_date,
+                monthly_installment=data.monthly_installment,
+                status=data.status
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return LoanResponse(status="success", message="Loan created successfully", payload=record.__dict__)
+            return LoanResponse(status="success", message="Loan created successfully", payload=record.to_dict())
         except HTTPException as e:
             return LoanResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +64,7 @@ class LoanController:
             return LoanResponse(
                 status="success",
                 message="Loans retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +88,7 @@ class LoanController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Loan not found")
-            return LoanResponse(status="success", message="Loan retrieved successfully", payload=record.__dict__)
+            return LoanResponse(status="success", message="Loan retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return LoanResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +118,7 @@ class LoanController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return LoanResponse(status="success", message="Loan updated successfully", payload=record.__dict__)
+            return LoanResponse(status="success", message="Loan updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return LoanResponse(status="error", message=e.detail)
         except Exception as e:

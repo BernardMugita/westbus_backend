@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.maintenance_schedules.schedules_model import MaintenanceSchedule
 from app.routers.maintenance_schedules.maintenance_schedules_schemas import MaintenanceScheduleCreate, MaintenanceScheduleUpdate, MaintenanceScheduleResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class MaintenanceScheduleController:
@@ -24,11 +24,19 @@ class MaintenanceScheduleController:
             MaintenanceScheduleResponse
         """
         try:
-            record = MaintenanceSchedule(**data.model_dump())
+            record = MaintenanceSchedule(
+                vehicle_id=data.vehicle_id,
+                service_type=data.service_type,
+                interval_km=data.interval_km,
+                interval_days=data.interval_days,
+                last_done_km=data.last_done_km,
+                last_done_date=data.last_done_date,
+                status=data.status
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule created successfully", payload=record.__dict__)
+            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule created successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceScheduleResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +62,7 @@ class MaintenanceScheduleController:
             return MaintenanceScheduleResponse(
                 status="success",
                 message="MaintenanceSchedules retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +86,7 @@ class MaintenanceScheduleController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="MaintenanceSchedule not found")
-            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule retrieved successfully", payload=record.__dict__)
+            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceScheduleResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +116,7 @@ class MaintenanceScheduleController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule updated successfully", payload=record.__dict__)
+            return MaintenanceScheduleResponse(status="success", message="MaintenanceSchedule updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return MaintenanceScheduleResponse(status="error", message=e.detail)
         except Exception as e:

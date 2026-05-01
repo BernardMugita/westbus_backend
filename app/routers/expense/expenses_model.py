@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy import String, Integer, Boolean, Enum as SqlEnum, ForeignKey, DateTime, Numeric, Text
 from datetime import datetime, timezone, timedelta
-from app.routers.core.models import Base
+from app.config.core.models import Base
 from decimal import Decimal
 from enum import Enum
 import uuid
@@ -31,3 +31,14 @@ class Expense(Base):
     receipt_image: Mapped[str] = mapped_column(String(255), nullable=True)
     incident_type: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_eat)
+    
+    def to_dict(self):
+        return {
+            "expense_id": self.expense_id,
+            "trip_id": self.trip_id,
+            "type": self.type.value,
+            "amount": float(self.amount),
+            "receipt_image": self.receipt_image,
+            "incident_type": self.incident_type,
+            "created_at": self.created_at.isoformat(),
+        }

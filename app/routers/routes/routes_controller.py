@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.routes.routes_model import Route
 from app.routers.routes.routes_schemas import RouteCreate, RouteUpdate, RouteResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class RouteController:

@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.seat_allocations.seats_model import SeatAllocation
 from app.routers.seat_allocations.seat_allocations_schemas import SeatAllocationCreate, SeatAllocationUpdate, SeatAllocationResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class SeatAllocationController:

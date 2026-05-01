@@ -1,11 +1,13 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 
 class InsuranceClaimCreate(BaseModel):
     insurance_id: str
-    incident_date: str
-    claim_date: str
+    incident_date: datetime
+    claim_date: datetime
     amount_claimed: float
     amount_approved: Optional[float] = None
     status: Optional[str] = None
@@ -14,8 +16,8 @@ class InsuranceClaimCreate(BaseModel):
 
 class InsuranceClaimUpdate(BaseModel):
     insurance_id: Optional[str] = None
-    incident_date: Optional[str] = None
-    claim_date: Optional[str] = None
+    incident_date: Optional[datetime] = None
+    claim_date: Optional[datetime] = None
     amount_claimed: Optional[float] = None
     amount_approved: Optional[float] = None
     status: Optional[str] = None

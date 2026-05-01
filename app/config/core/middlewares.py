@@ -1,6 +1,6 @@
 import jwt
 from fastapi import HTTPException, status
-from app.config.settings import settings
+from app.config.core.settings import settings
 from functools import wraps
 
 def validate_jwt(token: str) -> dict:

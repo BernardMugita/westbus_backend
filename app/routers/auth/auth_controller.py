@@ -61,6 +61,9 @@ class AuthController:
             existing_user = await db.execute(select(User).where(User.username == user_login.username))
             existing_user = existing_user.scalar_one_or_none()
             
+            
+            print(existing_user)
+            
             if not existing_user:
                 raise HTTPException(status_code=400, detail="User not found")
             

@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
@@ -5,7 +6,7 @@ from typing import Optional
 class MaintenanceRecordCreate(BaseModel):
     vehicle_id: str
     driver_id: Optional[str] = None
-    maintenance_date: str
+    maintenance_date: datetime
     type: str
     cost: float
     odometer_km: Optional[int] = None
@@ -16,7 +17,7 @@ class MaintenanceRecordCreate(BaseModel):
 class MaintenanceRecordUpdate(BaseModel):
     vehicle_id: Optional[str] = None
     driver_id: Optional[str] = None
-    maintenance_date: Optional[str] = None
+    maintenance_date: Optional[datetime] = None
     type: Optional[str] = None
     cost: Optional[float] = None
     odometer_km: Optional[int] = None

@@ -1,7 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-from sqlalchemy import String, Integer, Boolean, Enum as SqlEnum, ForeignKey, DateTime, Numeric, Text
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Enum as SqlEnum, ForeignKey, DateTime, Numeric, Text
 from datetime import datetime, timezone, timedelta
-from app.routers.core.models import Base
+from app.config.core.models import Base
 from decimal import Decimal
 from enum import Enum
 import uuid
@@ -36,14 +36,10 @@ class RevenueLedger(Base):
     __tablename__ = "revenue_ledger"
 
     revenue_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=gen_uuid)
-    payment_id: Mapped[str] = mapped_column(String(36), ForeignKey("payments.payment_id"), nullable=True)
-    booking_id: Mapped[str] = mapped_column(String(36), ForeignKey("bookings.booking_id"), nullable=True)
     trip_id: Mapped[str] = mapped_column(String(36), ForeignKey("trips.trip_id"), nullable=False)
     revenue_source: Mapped[RevenueSource] = mapped_column(SqlEnum(RevenueSource), nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     revenue_type: Mapped[RevenueType] = mapped_column(SqlEnum(RevenueType), nullable=False)
-    payment_method: Mapped[PaymentMethod] = mapped_column(SqlEnum(PaymentMethod), nullable=True)
-    transaction_ref: Mapped[str] = mapped_column(String(100), nullable=True)
     recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_eat)
     recorded_by: Mapped[str] = mapped_column(String(100), nullable=True)
     notes: Mapped[str] = mapped_column(Text, nullable=True)
@@ -51,14 +47,10 @@ class RevenueLedger(Base):
     def to_dict(self):
         return {
             "revenue_id": self.revenue_id,
-            "payment_id": self.payment_id,
-            "booking_id": self.booking_id,
             "trip_id": self.trip_id,
             "revenue_source": self.revenue_source.value,
             "amount": float(self.amount),
             "revenue_type": self.revenue_type.value,
-            "payment_method": self.payment_method.value if self.payment_method else None,
-            "transaction_ref": self.transaction_ref,
             "recorded_at": self.recorded_at.isoformat(),
             "recorded_by": self.recorded_by,
             "notes": self.notes,

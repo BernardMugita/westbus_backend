@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.trips.trips_model import Trip
 from app.routers.trips.trips_schemas import TripCreate, TripUpdate, TripResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class TripController:
@@ -24,11 +24,20 @@ class TripController:
             TripResponse
         """
         try:
-            record = Trip(**data.model_dump())
+            record = Trip(
+                vehicle_id=data.vehicle_id,
+                driver_id=data.driver_id,
+                route_id=data.route_id,
+                start_time=data.start_time,
+                end_time=data.end_time,
+                expected_duration_min=data.expected_duration_min,
+                distance_km=data.distance_km,
+                status=data.status
+            )
             db.add(record)
             await db.commit()
             await db.refresh(record)
-            return TripResponse(status="success", message="Trip created successfully", payload=record.__dict__)
+            return TripResponse(status="success", message="Trip created successfully", payload=record.to_dict())
         except HTTPException as e:
             return TripResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +63,7 @@ class TripController:
             return TripResponse(
                 status="success",
                 message="Trips retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +87,7 @@ class TripController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trip not found")
-            return TripResponse(status="success", message="Trip retrieved successfully", payload=record.__dict__)
+            return TripResponse(status="success", message="Trip retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return TripResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +117,7 @@ class TripController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return TripResponse(status="success", message="Trip updated successfully", payload=record.__dict__)
+            return TripResponse(status="success", message="Trip updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return TripResponse(status="error", message=e.detail)
         except Exception as e:

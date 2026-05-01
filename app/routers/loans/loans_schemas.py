@@ -1,3 +1,5 @@
+
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
@@ -8,8 +10,8 @@ class LoanCreate(BaseModel):
     principal_amount: float
     interest_rate: float
     total_payable: float
-    start_date: str
-    end_date: str
+    start_date: datetime
+    end_date: datetime
     monthly_installment: float
     status: Optional[str] = None
 
@@ -20,8 +22,8 @@ class LoanUpdate(BaseModel):
     principal_amount: Optional[float] = None
     interest_rate: Optional[float] = None
     total_payable: Optional[float] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     monthly_installment: Optional[float] = None
     status: Optional[str] = None
 

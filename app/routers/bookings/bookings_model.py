@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from enum import Enum
 import uuid
-from app.routers.core.models import Base
+from app.config.core.models import Base
 
 EAT = timezone(timedelta(hours=3))
 

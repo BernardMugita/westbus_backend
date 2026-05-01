@@ -1,11 +1,14 @@
+from decimal import Decimal
+
 from fastapi import HTTPException, Header, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.routers.loan_repayments.loan_repayments_model import LoanRepayment
+from app.routers.loans.loans_model import Loan
 from app.routers.loan_repayments.loan_repayments_schemas import LoanRepaymentCreate, LoanRepaymentUpdate, LoanRepaymentResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class LoanRepaymentController:
@@ -14,21 +17,33 @@ class LoanRepaymentController:
 
     @requires_admin
     async def create_loan_repayments(self, db: AsyncSession, data: LoanRepaymentCreate, authorization: str = Header(...), **kwargs) -> LoanRepaymentResponse:
-        """
-        Create a new LoanRepayment record. Admin only.
-        Args:
-            db (AsyncSession): Database session
-            data (LoanRepaymentCreate): LoanRepayment data
-            authorization (str): Bearer token
-        Returns:
-            LoanRepaymentResponse
-        """
         try:
-            record = LoanRepayment(**data.model_dump())
+            loan_result = await db.execute(select(Loan).where(Loan.loan_id == data.loan_id))
+            loan = loan_result.scalar_one_or_none()
+
+            if not loan:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated Loan not found")
+            
+            outstanding_balance = float(loan.total_payable) - float(data.amount_paid)
+            loan.total_payable -= Decimal(str(data.amount_paid))
+
+            record = LoanRepayment(
+                loan_id=data.loan_id,
+                payment_date=data.payment_date,
+                amount_paid=data.amount_paid,
+                principal_portion=data.principal_portion,
+                interest_portion=data.interest_portion,
+                outstanding_balance=outstanding_balance,
+                receipt_ref=data.receipt_ref
+            )
+
             db.add(record)
             await db.commit()
+            await db.refresh(loan)
             await db.refresh(record)
-            return LoanRepaymentResponse(status="success", message="LoanRepayment created successfully", payload=record.__dict__)
+
+            return LoanRepaymentResponse(status="success", message="LoanRepayment created successfully", payload=record.to_dict())
+
         except HTTPException as e:
             return LoanRepaymentResponse(status="error", message=e.detail)
         except Exception as e:
@@ -54,7 +69,7 @@ class LoanRepaymentController:
             return LoanRepaymentResponse(
                 status="success",
                 message="LoanRepayments retrieved successfully",
-                payload=[r.__dict__ for r in records]
+                payload=[r.to_dict() for r in records]
             )
         except Exception as e:
             return JSONResponse(
@@ -78,7 +93,7 @@ class LoanRepaymentController:
             record = result.scalar_one_or_none()
             if not record:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="LoanRepayment not found")
-            return LoanRepaymentResponse(status="success", message="LoanRepayment retrieved successfully", payload=record.__dict__)
+            return LoanRepaymentResponse(status="success", message="LoanRepayment retrieved successfully", payload=record.to_dict())
         except HTTPException as e:
             return LoanRepaymentResponse(status="error", message=e.detail)
         except Exception as e:
@@ -108,7 +123,7 @@ class LoanRepaymentController:
                 setattr(record, field, value)
             await db.commit()
             await db.refresh(record)
-            return LoanRepaymentResponse(status="success", message="LoanRepayment updated successfully", payload=record.__dict__)
+            return LoanRepaymentResponse(status="success", message="LoanRepayment updated successfully", payload=record.to_dict())
         except HTTPException as e:
             return LoanRepaymentResponse(status="error", message=e.detail)
         except Exception as e:

@@ -2,8 +2,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Enum as SqlEnum
 from enum import Enum
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.config.settings import settings
-from app.routers.core.models import Base
+from app.config.core.settings import settings
+from app.config.core.models import Base
 import uuid
 import jwt
 

@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.driver.driver_model import Driver
 from app.routers.driver.driver_schemas import DriverCreate, DriverUpdate, DriverResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class DriverController:

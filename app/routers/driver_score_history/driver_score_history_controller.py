@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from app.routers.driver_score_history.history_model import DriverScoreHistory
 from app.routers.driver_score_history.driver_score_history_schemas import DriverScoreHistoryCreate, DriverScoreHistoryUpdate, DriverScoreHistoryResponse
-from app.routers.core.middlewares import requires_auth, requires_admin
+from app.config.core.middlewares import requires_auth, requires_admin
 
 
 class DriverScoreHistoryController:
