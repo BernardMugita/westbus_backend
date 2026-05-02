@@ -3,14 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import get_db
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # ─── Auth & Users ─────────────────────────────────────────────────────────────
 from app.routers.auth.auth_services import router as auth_router
 from app.routers.users.user_services import router as user_router
@@ -47,6 +39,14 @@ from app.routers.insurance_policy.insurance_policy_services import router as ins
 from app.routers.insurance_claim.insurance_claim_services import router as insurance_claim_router
 
 app = FastAPI(title="WestBus API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ─── Register Routers ─────────────────────────────────────────────────────────
 app.include_router(auth_router)
