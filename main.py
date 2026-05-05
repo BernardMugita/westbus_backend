@@ -37,6 +37,7 @@ from app.routers.maintenance_schedules.maintenance_schedules_services import rou
 # ─── Insurance ────────────────────────────────────────────────────────────────
 from app.routers.insurance_policy.insurance_policy_services import router as insurance_policy_router
 from app.routers.insurance_claim.insurance_claim_services import router as insurance_claim_router
+from app.routers.dashboard.dashboard_services import router as dashboard_router
 
 app = FastAPI(title="WestBus API")
 
@@ -65,6 +66,7 @@ app.include_router(maintenance_records_router)
 app.include_router(maintenance_schedules_router)
 app.include_router(insurance_policy_router)
 app.include_router(insurance_claim_router)
+app.include_router(dashboard_router)
 
 @app.get("/")
 async def root(db: AsyncSession = Depends(get_db)):
